@@ -71,11 +71,15 @@ object SparkBuild extends Build {
       triggeredMessage   := Watched.clearWhenTriggered,
       // runScriptSetting,
       resolvers := allResolvers,
+      // This is not necessary, all releases are synced to Maven
+      resolvers += Resolver.bintrayRepo("scalacenter", "releases"),
       exportJars := true,
       // For the Hadoop variants to work, we must rebuild the package before
       // running, so we make it a dependency of run.
       (run in Compile) <<= (run in Compile) dependsOn (packageBin in Compile),
       libraryDependencies ++= Dependencies.sparkdeps,
+      libraryDependencies += "ch.epfl.scala" %% "spores" % "0.4.3",
+      addCompilerPlugin("ch.epfl.scala" %% "spores-serialization" % "0.4.3"),
       excludeFilter in unmanagedSources := (HiddenFileFilter || "*-script.scala"),
       unmanagedResourceDirectories in Compile += baseDirectory.value / "conf",
       unmanagedResourceDirectories in Test += baseDirectory.value / "conf",
