@@ -62,13 +62,11 @@ object InvertedIndex5b {
       // and count the unique occurrences.
       input
         .flatMap (spore {
-          val captured = ps
-          (elem: (String, String)) => elem match {
-            case (path, text) =>
-              // If we don't trim leading whitespace, the regex split creates
-              // an undesired leading "" word!
-              text.trim.split(captured.alphabeticPattern).map( word => (word, path)).toTraversable
-          }
+          case (path, text) =>
+            // If we don't trim leading whitespace, the regex split creates
+            // an undesired leading "" word!
+            text.trim.split(capture(ps).alphabeticPattern).map(
+              word => (word, path)).toTraversable
         })  // RDD[(String,String)] of (word,path) pairs
         .map (spore {
           // We're going to use the (word, path) tuple as a key for counting
