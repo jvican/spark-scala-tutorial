@@ -4,7 +4,7 @@ import org.apache.spark.SparkContext._
 import scala.spores._
 
 
-class Patterns extends Serializable {
+sealed class Patterns extends Serializable {
   val alphabeticPattern = """[^\p{IsAlphabetic}]+"""
 }
 
@@ -62,12 +62,12 @@ object InvertedIndex5b {
       // and count the unique occurrences.
       input
         .flatMap (spore {
-          val captured = ps.alphabeticPattern
+          val captured = ps
           (elem: (String, String)) => elem match {
             case (path, text) =>
               // If we don't trim leading whitespace, the regex split creates
               // an undesired leading "" word!
-              text.trim.split(captured).map( word => (word, path)).toTraversable
+              text.trim.split(captured.alphabeticPattern).map( word => (word, path)).toTraversable
           }
         })  // RDD[(String,String)] of (word,path) pairs
         .map (spore {
